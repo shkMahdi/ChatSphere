@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User documents
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Server documents
+    match /servers/{serverId} {
+      allow read: if request.auth != null && request.auth.uid in resource.data.members;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.ownerId;
+      allow update: if request.auth != null && request.auth.uid in resource.data.members;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.ownerId;
+    }
+    
+    // Channel documents
+    match /channels/{channelId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+    
+    // Message documents
+    match /messages/{messageId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && 
+                      request.auth.uid == request.resource.data.userId;
+      allow update, delete: if request.auth != null && 
+                              request.auth.uid == resource.data.userId;
+    }
+  }
+}
