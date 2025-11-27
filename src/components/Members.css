@@ -1,0 +1,271 @@
+.members-panel {
+  flex: 1;
+  background-color: #2f3136;
+  border-left: 1px solid #202225;
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+}
+
+.members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #202225;
+}
+
+.members-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.invite-btn {
+  background-color: transparent;
+  color: #43b581;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+}
+
+.invite-btn:hover {
+  color: #3aa570;
+}
+
+.members-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.no-server-message,
+.no-members {
+  text-align: center;
+  color: #72767d;
+  padding: 16px;
+  font-size: 13px;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.member-item:hover {
+  background-color: #36393f;
+}
+
+.member-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #5865f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.member-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.member-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-status {
+  font-size: 11px;
+  color: #72767d;
+}
+
+.owner-badge {
+  background-color: #5865f2;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* Invite Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #36393f;
+  border-radius: 5px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.modal h2 {
+  margin: 0 0 16px 0;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.error-message {
+  background-color: #f04747;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.success-message {
+  background-color: #43b581;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #b9bbbe;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  background-color: #202225;
+  border: 1px solid #202225;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #5865f2;
+  background-color: #2f3136;
+}
+
+.search-results {
+  background-color: #2f3136;
+  border: 1px solid #202225;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  gap: 10px;
+  border-bottom: 1px solid #202225;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background-color: #36393f;
+}
+
+.result-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #5865f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.result-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.result-email {
+  display: block;
+  font-size: 11px;
+  color: #72767d;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-buttons button[type="button"] {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+.modal-buttons button[type="button"]:hover {
+  background-color: #4e5058;
+}
+
+.modal-buttons button[type="submit"] {
+  background-color: #5865f2;
+  color: white;
+}
+
+.modal-buttons button[type="submit"]:hover {
+  background-color: #4752c4;
+}

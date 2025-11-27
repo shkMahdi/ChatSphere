@@ -4,6 +4,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Sidebar from "./components/Sidebar";
 import Chat from "./components/Chat";
+import Members from "./components/Members";
 import "./App.css";
 
 function App() {
@@ -30,6 +31,9 @@ function App() {
       />
       <Chat 
         selectedChannel={selectedChannel}
+      />
+      <Members 
+        selectedServer={selectedServer}
       />
     </div>
   );

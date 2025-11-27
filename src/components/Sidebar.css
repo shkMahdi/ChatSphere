@@ -318,3 +318,70 @@
 .modal-buttons button[type="submit"]:hover {
   background-color: #4752c4;
 }
+
+/* Delete Buttons */
+.server-item {
+  position: relative;
+}
+
+.delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #f04747;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  padding: 0;
+  opacity: 0;
+}
+
+.server-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  background-color: #d83c3c;
+}
+
+.channel-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.channel-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.delete-channel-btn {
+  background-color: transparent;
+  color: #f04747;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  transition: color 0.2s ease, opacity 0.2s ease;
+  margin-right: 8px;
+  opacity: 0;
+}
+
+.channel-item:hover .delete-channel-btn {
+  opacity: 1;
+}
+
+.delete-channel-btn:hover {
+  color: #d83c3c;
+}
+

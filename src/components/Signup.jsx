@@ -12,13 +12,19 @@ function Signup({ onToggle }) {
   const [loading, setLoading] = useState(false);
 
   const createUserDocument = async (user, displayName) => {
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      email: user.email,
-      displayName: displayName,
-      createdAt: new Date().toISOString(),
-      status: "online"
-    });
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        displayName: displayName,
+        createdAt: new Date().toISOString(),
+        status: "online"
+      });
+      console.log("User document created successfully for:", user.email);
+    } catch (error) {
+      console.error("Error creating user document:", error);
+      throw error; // Re-throw so signup knows it failed
+    }
   };
 
   const handleEmailSignup = async (e) => {

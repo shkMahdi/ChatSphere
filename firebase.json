@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "default": "chat-app-36a12"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, query, where, onSnapshot, addDoc, orderBy, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, onSnapshot, addDoc, orderBy, serverTimestamp, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
 import "./Sidebar.css";
@@ -112,7 +112,6 @@ function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelect
 
     if (!selectedServer) {
       console.error("createChannel: no selected server. Select a server first.");
-      // give the user visible feedback in the UI
       alert("Please select a server before creating a channel.");
       return;
     }
@@ -137,18 +136,90 @@ function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelect
     }
   };
 
+  const deleteServer = async (serverId) => {
+    if (!window.confirm("Are you sure you want to delete this server? This will also delete all channels and messages.")) {
+      return;
+    }
+
+    try {
+      const channelsSnapshot = await getDocs(query(
+        collection(db, "channels"),
+        where("serverId", "==", serverId)
+      ));
+
+      for (const channelDoc of channelsSnapshot.docs) {
+        const messagesSnapshot = await getDocs(query(
+          collection(db, "messages"),
+          where("channelId", "==", channelDoc.id)
+        ));
+        for (const messageDoc of messagesSnapshot.docs) {
+          await deleteDoc(doc(db, "messages", messageDoc.id));
+        }
+        await deleteDoc(doc(db, "channels", channelDoc.id));
+      }
+
+      await deleteDoc(doc(db, "servers", serverId));
+      console.log('Deleted server:', serverId);
+
+      if (selectedServer?.id === serverId) {
+        setSelectedServer(null);
+        setSelectedChannel(null);
+      }
+    } catch (error) {
+      console.error("Error deleting server:", error);
+      alert("Failed to delete server.");
+    }
+  };
+
+  const deleteChannel = async (channelId) => {
+    if (!window.confirm("Are you sure you want to delete this channel? This will also delete all messages.")) {
+      return;
+    }
+
+    try {
+      const messagesSnapshot = await getDocs(query(
+        collection(db, "messages"),
+        where("channelId", "==", channelId)
+      ));
+      for (const messageDoc of messagesSnapshot.docs) {
+        await deleteDoc(doc(db, "messages", messageDoc.id));
+      }
+
+      await deleteDoc(doc(db, "channels", channelId));
+      console.log('Deleted channel:', channelId);
+
+      if (selectedChannel?.id === channelId) {
+        setSelectedChannel(null);
+      }
+    } catch (error) {
+      console.error("Error deleting channel:", error);
+      alert("Failed to delete channel.");
+    }
+  };
+
   return (
     <div className="sidebar">
       <div className="server-list">
         <div className="server-icon discord-icon">D</div>
         {servers.map((server) => (
-          <div 
-            key={server.id} 
-            className={`server-icon ${selectedServer?.id === server.id ? 'active' : ''}`}
-            onClick={() => setSelectedServer(server)}
-            title={server.name}
-          >
-            {server.name.charAt(0).toUpperCase()}
+          <div key={server.id} className="server-item">
+            <div 
+              className={`server-icon ${selectedServer?.id === server.id ? 'active' : ''}`}
+              onClick={() => setSelectedServer(server)}
+              title={server.name}
+            >
+              {server.name.charAt(0).toUpperCase()}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteServer(server.id);
+                }}
+                className="delete-btn"
+                title="Delete server"
+              >
+                ✕
+              </button>
+            </div>
           </div>
         ))}
         <div 
@@ -187,8 +258,20 @@ function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelect
                 className={`channel-item ${selectedChannel?.id === channel.id ? 'active' : ''}`}
                 onClick={() => setSelectedChannel(channel)}
               >
-                <span className="channel-icon">#</span>
-                <span className="channel-name">{channel.name}</span>
+                <div className="channel-content">
+                  <span className="channel-icon">#</span>
+                  <span className="channel-name">{channel.name}</span>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteChannel(channel.id);
+                  }}
+                  className="delete-channel-btn"
+                  title="Delete channel"
+                >
+                  ✕
+                </button>
               </div>
             ))}
         </div>

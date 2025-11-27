@@ -1,30 +1,14 @@
-# Discord Chat App
+# ChatSphere Chat App
 
-A real-time chat application built with React, Firebase, and Vite - inspired by Discord's UI/UX.
+A real-time chat application built with React and Firebase — inspired by Discord's server & channel model.
 
 ## Features
 
-✅ **Authentication**
-- Email/Password signup and login
-- Google OAuth integration
-- User profile management
-
-✅ **Real-time Messaging**
-- Send and receive messages instantly
-- Real-time message updates using Firestore listeners
-- Message timestamps with smart formatting
-
-✅ **Server & Channel Management**
-- Create multiple servers
-- Create multiple channels within servers
-- Switch between channels seamlessly
-- Server membership management
-
-✅ **Discord-like UI**
-- Server sidebar with icons
-- Channel list with categories
-- Message feed with user avatars
-- Responsive design
+- **Authentication**: Email/password signup and login
+- **Servers**: Create and manage multiple servers
+- **Channels**: Create text channels within servers
+- **Real-time Messaging**: Send/receive messages with live updates using Firestore listeners
+- **Responsive UI**: Discord-like sidebar, channel list, and message feed with user avatars
 
 ## Tech Stack
 
@@ -33,189 +17,83 @@ A real-time chat application built with React, Firebase, and Vite - inspired by 
 - **Styling**: CSS3
 - **Language**: JavaScript/JSX
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- npm or yarn
+- Node.js (v14+)
+- npm
 - Firebase account
 
-### Installation
+### Setup
 
-1. Clone the repository:
+1. **Clone & install**:
 ```bash
-git clone <your-repo-url>
 cd discord-chat-app
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. Firebase Setup:
-   - Go to [Firebase Console](https://console.firebase.google.com/)
-   - Create a new project or use existing one
-   - Enable Authentication (Email/Password and Google providers)
-   - Create a Firestore database (start in test mode, we'll add rules later)
-   - Copy your Firebase config from Project Settings
+2. **Firebase config**:
+   - Go to [Firebase Console](https://console.firebase.google.com/) → Create project
+   - Enable **Authentication** (Email/Password)
+   - Create **Firestore database** (test mode)
+   - Copy your config from Project Settings
 
-4. Update Firebase configuration in `src/firebase.js` with your credentials
+3. **Update `src/firebase.js`** with your Firebase credentials
 
-5. Deploy Firestore rules and indexes:
+4. **Deploy Firestore rules & indexes**:
 ```bash
-# Install Firebase CLI if you haven't
 npm install -g firebase-tools
-
-# Login to Firebase
 firebase login
-
-# Initialize Firebase (select Firestore)
-firebase init firestore
-
-# Deploy rules and indexes
+firebase init firestore   # select your project
 firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-### Running the App
+### Run
 
-Start the development server:
 ```bash
 npm run dev
 ```
 
-Open your browser and navigate to the URL shown (usually `http://localhost:5173`)
-
-### Building for Production
-
-```bash
-npm run build
-npm run preview
-```
+Open `http://localhost:5173`
 
 ## Usage
 
-### First Time Setup
-
-1. **Sign Up**: Create an account using email/password or Google
-2. **Create a Server**: Click the "+" button in the server list
-3. **Create Channels**: Click the "+" next to "TEXT CHANNELS"
-4. **Start Chatting**: Select a channel and send messages!
-
-### Features Guide
-
-- **Switch Servers**: Click on server icons in the left sidebar
-- **Switch Channels**: Click on channel names in the channel list
-- **Send Messages**: Type in the message input and press Enter
-- **Logout**: Click the door icon (🚪) at the bottom of the sidebar
+1. **Sign up** with email/password
+2. **Create a server** (click the "+" in the server list)
+3. **Create channels** (click "+" next to "TEXT CHANNELS")
+4. **Send messages** in any channel
+5. **Switch servers/channels** by clicking their names
 
 ## Project Structure
 
 ```
-discord-chat-app/
-├── src/
-│   ├── components/
-│   │   ├── Login.jsx          # Login component
-│   │   ├── Signup.jsx         # Signup component
-│   │   ├── Auth.css           # Auth styles
-│   │   ├── Sidebar.jsx        # Server & channel sidebar
-│   │   ├── Sidebar.css        # Sidebar styles
-│   │   ├── Chat.jsx           # Message display & input
-│   │   └── Chat.css           # Chat styles
-│   ├── contexts/
-│   │   └── AuthContext.jsx    # Authentication context
-│   ├── firebase.js            # Firebase configuration
-│   ├── App.jsx                # Main app component
-│   ├── App.css                # App styles
-│   ├── main.jsx               # Entry point
-│   └── style.css              # Global styles
-├── firestore.rules            # Firestore security rules
-├── firestore.indexes.json     # Firestore indexes
-├── index.html                 # HTML template
-├── package.json               # Dependencies
-└── README.md                  # This file
+src/
+  components/
+    Login.jsx, Signup.jsx     # Auth screens
+    Sidebar.jsx               # Servers & channels sidebar
+    Chat.jsx                  # Messages & input
+    *.css                     # Component styles
+  contexts/
+    AuthContext.jsx           # Auth state management
+  firebase.js                 # Firebase config
+  App.jsx                     # Main component
+firestore.rules               # Security rules
+firestore.indexes.json        # Firestore indexes
 ```
 
-## Firestore Data Structure
+## Firestore Collections
 
-### Collections
+- **servers**: { name, ownerId, members[], createdAt }
+- **channels**: { name, serverId, type, createdAt }
+- **messages**: { content, channelId, userId, userName, timestamp }
 
-**users**
-```javascript
-{
-  uid: string,
-  email: string,
-  displayName: string,
-  createdAt: timestamp,
-  status: string
-}
-```
-
-**servers**
-```javascript
-{
-  name: string,
-  ownerId: string,
-  members: [string],  // array of user UIDs
-  createdAt: timestamp
-}
-```
-
-**channels**
-```javascript
-{
-  name: string,
-  serverId: string,
-  type: "text" | "voice",
-  createdAt: timestamp
-}
-```
-
-**messages**
-```javascript
-{
-  content: string,
-  channelId: string,
-  userId: string,
-  userName: string,
-  timestamp: timestamp
-}
-```
-
-## Future Enhancements
-
-- 🎥 Video calling
-- 📞 Voice chat
-- 🖼️ Image/file uploads
-- 👥 User mentions
-- 😀 Emoji reactions
-- 🔍 Message search
-- 🌙 Dark/light theme toggle
-- 📱 Mobile responsive improvements
-- ✏️ Edit/delete messages
-- 👁️ Read receipts
-- ⌨️ Typing indicators
+Required indexes:
+- channels: serverId + createdAt
+- messages: channelId + timestamp
 
 ## Troubleshooting
 
-### Firestore Permission Errors
-If you see permission errors, make sure to:
-1. Deploy the firestore.rules file: `firebase deploy --only firestore:rules`
-2. Ensure you're logged in when testing
+**Permission errors**: Deploy rules with `firebase deploy --only firestore:rules`
 
-### Index Errors
-If you see index-related errors:
-1. Firebase will provide a link to create the index automatically, or
-2. Deploy indexes: `firebase deploy --only firestore:indexes`
-
-### Port Already in Use
-If port 5173 is in use, Vite will automatically try another port (5174, etc.)
-
-## Contributing
-
-Feel free to fork this project and submit pull requests for any improvements!
-
-## License
-
-MIT License - feel free to use this project for learning or building your own chat app!
+**Index errors**: Firebase will show a link to create the index, or deploy with `firebase deploy --only firestore:indexes`
