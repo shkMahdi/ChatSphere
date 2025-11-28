@@ -5,6 +5,7 @@ import Signup from "./components/Signup";
 import Sidebar from "./components/Sidebar";
 import Chat from "./components/Chat";
 import Members from "./components/Members";
+import ScheduledMessageWorker from "./components/ScheduledMessageWorker";
 import "./App.css";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
 
   return (
     <div className="app">
+      <ScheduledMessageWorker currentUser={currentUser} />
       <Sidebar 
         selectedServer={selectedServer}
         setSelectedServer={setSelectedServer}

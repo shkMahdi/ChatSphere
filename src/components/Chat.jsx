@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
+import MessageScheduler from "./MessageScheduler";
+import ScheduledMessagesPanel from "./ScheduledMessagesPanel";
+import CollaborativeNote from "./CollaborativeNote";
 import "./Chat.css";
 
 function Chat({ selectedChannel }) {
   const { currentUser } = useAuth();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [showScheduledPanel, setShowScheduledPanel] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [noteHasContent, setNoteHasContent] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -67,6 +73,25 @@ function Chat({ selectedChannel }) {
     }
   };
 
+  useEffect(() => {
+    if (!selectedChannel) {
+      setNoteHasContent(false);
+      return;
+    }
+
+    const noteRef = doc(db, "channelNotes", selectedChannel.id);
+    const unsubscribe = onSnapshot(
+      noteRef,
+      (snapshot) => {
+        const hasContent = Boolean(snapshot.data()?.content?.trim());
+        setNoteHasContent(hasContent);
+      },
+      (err) => console.error("Channel note watcher error:", err)
+    );
+
+    return unsubscribe;
+  }, [selectedChannel]);
+
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return "Just now";
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -103,7 +128,25 @@ function Chat({ selectedChannel }) {
           <span className="channel-icon">#</span>
           <span className="channel-name">{selectedChannel.name}</span>
         </div>
+        <div className="chat-header-controls">
+          <button
+            className={`notes-toggle ${showNotes ? "active" : ""}`}
+            onClick={() => setShowNotes((prev) => !prev)}
+          >
+            📝 Notes
+            {noteHasContent && <span className="notes-badge" />}
+          </button>
+        </div>
       </div>
+
+      {showNotes && (
+        <div className="notes-panel">
+          <CollaborativeNote
+            selectedChannel={selectedChannel}
+            currentUser={currentUser}
+          />
+        </div>
+      )}
 
       <div className="messages-container">
         {messages.length === 0 ? (
@@ -139,7 +182,23 @@ function Chat({ selectedChannel }) {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
+          <div className="message-form-controls">
+            <button type="submit" className="send-btn">
+              Send
+            </button>
+            <MessageScheduler selectedChannel={selectedChannel} currentUser={currentUser} />
+            <button
+              type="button"
+              className={`scheduled-toggle ${showScheduledPanel ? "active" : ""}`}
+              onClick={() => setShowScheduledPanel((prev) => !prev)}
+            >
+              📋 Scheduled
+            </button>
+          </div>
         </form>
+        {showScheduledPanel && (
+          <ScheduledMessagesPanel selectedChannel={selectedChannel} currentUser={currentUser} />
+        )}
       </div>
     </div>
   );

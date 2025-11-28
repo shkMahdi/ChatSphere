@@ -209,17 +209,17 @@ function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelect
               title={server.name}
             >
               {server.name.charAt(0).toUpperCase()}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteServer(server.id);
-                }}
-                className="delete-btn"
-                title="Delete server"
-              >
-                ✕
-              </button>
             </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteServer(server.id);
+              }}
+              className="delete-btn"
+              title="Delete server"
+            >
+              ✕
+            </button>
           </div>
         ))}
         <div 
