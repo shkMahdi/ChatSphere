@@ -58,7 +58,8 @@ function Members({ selectedServer }) {
     setInviteError("");
     setInviteSuccess("");
 
-    if (!searchEmail.trim()) {
+    const normalizedEmail = searchEmail.trim().toLowerCase();
+    if (!normalizedEmail) {
       setInviteError("Please enter an email address.");
       return;
     }
@@ -70,13 +71,15 @@ function Members({ selectedServer }) {
 
     try {
       // Find user by email - first check in-memory, then query Firestore directly
-      let userToInvite = allUsers.find(u => u.email === searchEmail.trim());
+      let userToInvite = allUsers.find(
+        (u) => u.emailLowercase === normalizedEmail
+      );
 
       // If not found in memory, query Firestore directly
       if (!userToInvite) {
         const usersSnapshot = await getDocs(query(
           collection(db, "users"),
-          where("email", "==", searchEmail.trim())
+          where("emailLowercase", "==", normalizedEmail)
         ));
 
         if (usersSnapshot.docs.length > 0) {
@@ -192,7 +195,7 @@ function Members({ selectedServer }) {
               {searchEmail.trim() && (
                 <div className="search-results">
                   {allUsers
-                    .filter(u => u.email.includes(searchEmail.trim()) && u.uid !== currentUser.uid)
+                    .filter(u => u.emailLowercase?.includes(searchEmail.trim().toLowerCase()) && u.uid !== currentUser.uid)
                     .slice(0, 5)
                     .map(user => (
                       <div

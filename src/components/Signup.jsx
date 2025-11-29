@@ -16,6 +16,7 @@ function Signup({ onToggle }) {
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         email: user.email,
+        emailLowercase: user.email?.toLowerCase() || "",
         displayName: displayName,
         createdAt: new Date().toISOString(),
         status: "online"
