@@ -80,14 +80,18 @@
   margin-left: 8px;
 .notes-panel {
   border-bottom: 1px solid var(--border-primary);
-  background-color: var(--bg-secondary);
-  padding: 16px;
+  background-color: #1b1d24;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
 }
 
 .collab-note {
+  width: 100%;
+  max-width: 840px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .collab-note-header {
@@ -108,20 +112,22 @@
 
 .collab-note textarea {
   width: 100%;
-  border: 1px solid var(--border-secondary);
-  border-radius: 8px;
-  background-color: var(--bg-tertiary);
-  color: var(--text-secondary);
-  padding: 12px;
+  border: 1px solid #2e303a;
+  border-radius: 12px;
+  background-color: #1f2028;
+  color: #f7f7ff;
+  padding: 24px;
   font-family: inherit;
   resize: vertical;
-  min-height: 160px;
-  transition: border-color 0.2s ease;
+  min-height: 200px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  line-height: 1.6;
 }
 
 .collab-note textarea:focus {
   outline: none;
   border-color: var(--primary-accent-light);
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15);
 }
 
 .collab-contributors {
