@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Timestamp, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 
-function MessageScheduler({ selectedChannel, currentUser }) {
+function MessageScheduler({ selectedChannel, currentUser, disabled }) {
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
@@ -75,6 +75,7 @@ function MessageScheduler({ selectedChannel, currentUser }) {
         type="button"
         className="scheduler-toggle"
         onClick={() => setIsOpen((prev) => !prev)}
+        disabled={disabled}
       >
         🕒 Schedule
       </button>

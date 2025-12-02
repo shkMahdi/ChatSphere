@@ -87,6 +87,7 @@ function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelect
         name: newServerName,
         ownerId: currentUser.uid,
         members: [currentUser.uid],
+        mutedMembers: [],
         createdAt: serverTimestamp()
       });
 

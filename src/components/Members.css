@@ -364,3 +364,59 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
 }
+
+/* Member Actions */
+.member-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.member-item:hover .member-actions {
+  opacity: 1;
+}
+
+.mute-btn,
+.remove-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.mute-btn {
+  color: var(--text-muted);
+}
+
+.mute-btn:hover {
+  background-color: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+}
+
+.mute-btn.unmute {
+  color: #fbbf24;
+}
+
+.mute-btn.unmute:hover {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.remove-btn {
+  color: var(--text-muted);
+}
+
+.remove-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+
+.muted-indicator {
+  font-size: 12px;
+  opacity: 0.8;
+}

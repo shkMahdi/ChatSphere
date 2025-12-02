@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, query, where, onSnapshot, doc, updateDoc, arrayUnion, getDocs } from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
 import "./Members.css";
@@ -125,6 +125,44 @@ function Members({ selectedServer }) {
     }
   };
 
+  const handleRemoveMember = async (memberId) => {
+    if (!window.confirm("Are you sure you want to remove this member from the server?")) {
+      return;
+    }
+
+    try {
+      const serverRef = doc(db, "servers", selectedServer.id);
+      await updateDoc(serverRef, {
+        members: arrayRemove(memberId),
+        mutedMembers: arrayRemove(memberId) // Also remove from muted if they were muted
+      });
+    } catch (error) {
+      console.error("Error removing member:", error);
+      alert("Failed to remove member. Please try again.");
+    }
+  };
+
+  const handleToggleMute = async (memberId) => {
+    try {
+      const serverRef = doc(db, "servers", selectedServer.id);
+      const mutedMembers = selectedServer.mutedMembers || [];
+      const isMuted = mutedMembers.includes(memberId);
+
+      if (isMuted) {
+        await updateDoc(serverRef, {
+          mutedMembers: arrayRemove(memberId)
+        });
+      } else {
+        await updateDoc(serverRef, {
+          mutedMembers: arrayUnion(memberId)
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling mute:", error);
+      alert("Failed to update mute status. Please try again.");
+    }
+  };
+
   if (!selectedServer) {
     return (
       <div className="members-panel">
@@ -155,20 +193,47 @@ function Members({ selectedServer }) {
         {members.length === 0 ? (
           <p className="no-members">No members yet</p>
         ) : (
-          members.map((member) => (
-            <div key={member.id} className="member-item">
-              <div className="member-avatar">
-                {member.displayName?.charAt(0).toUpperCase() || "U"}
+          members.map((member) => {
+            const isMuted = selectedServer.mutedMembers?.includes(member.uid);
+            const isMemberOwner = member.uid === selectedServer.ownerId;
+            const canManage = isOwner && !isMemberOwner;
+
+            return (
+              <div key={member.id} className="member-item">
+                <div className="member-avatar">
+                  {member.displayName?.charAt(0).toUpperCase() || "U"}
+                </div>
+                <div className="member-info">
+                  <span className="member-name">
+                    {member.displayName || member.email}
+                    {isMuted && <span className="muted-indicator"> 🔇</span>}
+                  </span>
+                  <span className="member-status">{member.status || "offline"}</span>
+                </div>
+                {isMemberOwner && (
+                  <span className="owner-badge">Owner</span>
+                )}
+                {canManage && (
+                  <div className="member-actions">
+                    <button
+                      className={`mute-btn ${isMuted ? "unmute" : ""}`}
+                      onClick={() => handleToggleMute(member.uid)}
+                      title={isMuted ? "Unmute member" : "Mute member"}
+                    >
+                      {isMuted ? "🔊" : "🔇"}
+                    </button>
+                    <button
+                      className="remove-btn"
+                      onClick={() => handleRemoveMember(member.uid)}
+                      title="Remove member"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
               </div>
-              <div className="member-info">
-                <span className="member-name">{member.displayName || member.email}</span>
-                <span className="member-status">{member.status || "offline"}</span>
-              </div>
-              {member.uid === selectedServer.ownerId && (
-                <span className="owner-badge">Owner</span>
-              )}
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

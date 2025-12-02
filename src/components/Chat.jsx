@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, doc } from "firebase/firestore";
+import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, doc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
 import MessageScheduler from "./MessageScheduler";
@@ -14,6 +14,8 @@ function Chat({ selectedChannel }) {
   const [showScheduledPanel, setShowScheduledPanel] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [noteHasContent, setNoteHasContent] = useState(false);
+  const [currentServer, setCurrentServer] = useState(null);
+  const [isMuted, setIsMuted] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -23,6 +25,48 @@ function Chat({ selectedChannel }) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Fetch server info to check mute status
+  useEffect(() => {
+    if (!selectedChannel) {
+      setCurrentServer(null);
+      setIsMuted(false);
+      return;
+    }
+
+    const fetchServer = async () => {
+      try {
+        const channelDoc = await getDocs(query(
+          collection(db, "channels"),
+          where("__name__", "==", selectedChannel.id)
+        ));
+
+        if (channelDoc.docs.length > 0) {
+          const channelData = channelDoc.docs[0].data();
+          const serverId = channelData.serverId;
+
+          const serverQuery = query(
+            collection(db, "servers"),
+            where("__name__", "==", serverId)
+          );
+
+          const unsubscribe = onSnapshot(serverQuery, (snapshot) => {
+            if (snapshot.docs.length > 0) {
+              const serverData = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+              setCurrentServer(serverData);
+              setIsMuted(serverData.mutedMembers?.includes(currentUser.uid) || false);
+            }
+          });
+
+          return unsubscribe;
+        }
+      } catch (error) {
+        console.error("Error fetching server:", error);
+      }
+    };
+
+    fetchServer();
+  }, [selectedChannel, currentUser]);
 
   // Fetch messages for selected channel
   useEffect(() => {
@@ -57,6 +101,10 @@ function Chat({ selectedChannel }) {
     if (!message.trim() || !selectedChannel) return;
     if (!currentUser) {
       console.error("handleSendMessage: no currentUser (not authenticated)");
+      return;
+    }
+    if (isMuted) {
+      alert("You are muted in this server and cannot send messages.");
       return;
     }
     try {
@@ -174,19 +222,25 @@ function Chat({ selectedChannel }) {
       </div>
 
       <div className="message-input-container">
+        {isMuted && (
+          <div className="muted-warning">
+            🔇 You are muted in this server and cannot send messages.
+          </div>
+        )}
         <form onSubmit={handleSendMessage} className="message-form">
           <input
             type="text"
             className="message-input"
-            placeholder={`Message #${selectedChannel.name}`}
+            placeholder={isMuted ? "You are muted" : `Message #${selectedChannel.name}`}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            disabled={isMuted}
           />
           <div className="message-form-controls">
-            <button type="submit" className="send-btn">
+            <button type="submit" className="send-btn" disabled={isMuted}>
               Send
             </button>
-            <MessageScheduler selectedChannel={selectedChannel} currentUser={currentUser} />
+            <MessageScheduler selectedChannel={selectedChannel} currentUser={currentUser} disabled={isMuted} />
             <button
               type="button"
               className={`scheduled-toggle ${showScheduledPanel ? "active" : ""}`}
