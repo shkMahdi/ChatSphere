@@ -1,0 +1,85 @@
+@startuml ChatSphere Class Diagram
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' ==================== MAIN COMPONENTS ====================
+
+class App {
+  Main Application
+}
+
+class Sidebar {
+  Server & Channel List
+}
+
+class Chat {
+  Message Display & Input
+}
+
+class Members {
+  Member Management
+}
+
+' ==================== DATA MODELS ====================
+
+class User {
+  + uid
+  + email
+  + displayName
+}
+
+class Server {
+  + id
+  + name
+  + ownerId
+  + members[]
+  + mutedMembers[]
+}
+
+class Channel {
+  + id
+  + name
+  + serverId
+}
+
+class Message {
+  + id
+  + content
+  + channelId
+  + userId
+  + timestamp
+}
+
+' ==================== FIREBASE ====================
+
+class Firebase {
+  Authentication
+  Firestore Database
+}
+
+' ==================== RELATIONSHIPS ====================
+
+App --> Sidebar
+App --> Chat
+App --> Members
+
+Sidebar --> Server : manages
+Sidebar --> Channel : manages
+
+Chat --> Message : displays
+
+Members --> User : displays
+
+Server "1" *-- "*" Channel
+Server "1" o-- "*" User
+Channel "1" *-- "*" Message
+User "1" -- "*" Message
+
+App ..> Firebase : uses
+Sidebar ..> Firebase : uses
+Chat ..> Firebase : uses
+Members ..> Firebase : uses
+
+@enduml

@@ -1,0 +1,71 @@
+@startuml User Login Sequence
+
+actor User
+participant "Login Page" as Login
+participant "Firebase Auth" as Auth
+participant "Firestore" as DB
+participant "Chat Interface" as Chat
+
+User -> Login: Enter credentials
+Login -> Auth: Authenticate user
+Auth --> Login: Return user data
+Login -> DB: Check user document
+DB --> Login: User document exists
+Login -> Chat: Redirect to chat
+Chat --> User: Display chat interface
+
+@enduml
+
+@startuml Send Message Sequence
+
+actor User
+participant "Chat Component" as Chat
+participant "Firestore" as DB
+participant "Other Users" as Others
+
+User -> Chat: Type message
+User -> Chat: Click send
+Chat -> DB: Save message
+DB --> Chat: Confirm saved
+DB -> Others: Real-time update
+Chat --> User: Display message
+Others --> Others: Display message
+
+@enduml
+
+@startuml Create Server Sequence
+
+actor User
+participant "Sidebar" as Sidebar
+participant "Firestore" as DB
+
+User -> Sidebar: Click + button
+Sidebar --> User: Show modal
+User -> Sidebar: Enter server name
+User -> Sidebar: Click create
+Sidebar -> DB: Create server document
+Sidebar -> DB: Create default channel
+DB --> Sidebar: Confirm created
+Sidebar --> User: Display new server
+
+@enduml
+
+@startuml Invite Member Sequence
+
+actor Owner
+participant "Members Panel" as Members
+participant "Firestore" as DB
+participant "New Member" as NewUser
+
+Owner -> Members: Click invite
+Members --> Owner: Show invite modal
+Owner -> Members: Enter email
+Members -> DB: Search user
+DB --> Members: Return user data
+Owner -> Members: Confirm invite
+Members -> DB: Add to server members
+DB --> Members: Confirm updated
+Members --> Owner: Show success
+DB -> NewUser: Grant server access
+
+@enduml

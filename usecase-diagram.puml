@@ -1,0 +1,35 @@
+@startuml ChatSphere Use Case Diagram
+
+left to right direction
+
+actor "User" as User
+actor "Server Owner" as Owner
+
+rectangle "ChatSphere System" {
+  usecase "Login/Signup" as UC1
+  usecase "Create Server" as UC2
+  usecase "Create Channel" as UC3
+  usecase "Send Message" as UC4
+  usecase "Schedule Message" as UC5
+  usecase "View Messages" as UC6
+  usecase "Edit Notes" as UC7
+  usecase "Invite Member" as UC8
+  usecase "Mute Member" as UC9
+  usecase "Remove Member" as UC10
+}
+
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC7
+
+Owner --> UC8
+Owner --> UC9
+Owner --> UC10
+
+Owner --|> User
+
+@enduml

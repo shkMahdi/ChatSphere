@@ -1,0 +1,61 @@
+@startuml User Login Flow
+
+start
+:Open application;
+if (Authenticated?) then (yes)
+  :Show chat interface;
+else (no)
+  :Show login page;
+  :Enter credentials;
+  :Click login;
+  :Show chat interface;
+endif
+stop
+
+@enduml
+
+@startuml Send Message Flow
+
+start
+:Select channel;
+:Type message;
+if (User muted?) then (yes)
+  :Show error;
+  stop
+else (no)
+  :Click send;
+  :Save to database;
+  :Display message;
+endif
+stop
+
+@enduml
+
+@startuml Create Server Flow
+
+start
+:Click + button;
+:Enter server name;
+:Click create;
+:Create server;
+:Create default channel;
+:Display server;
+stop
+
+@enduml
+
+@startuml Invite Member Flow
+
+start
+:Click invite button;
+:Enter user email;
+:Search user;
+if (User found?) then (yes)
+  :Add to server;
+  :Update member list;
+else (no)
+  :Show error;
+endif
+stop
+
+@enduml
