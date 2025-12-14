@@ -18,17 +18,14 @@ function ServerSearch({ onClose }) {
     setMessage("");
     
     try {
-      const q = query(
-        collection(db, "servers"),
-        where("isPublic", "==", true)
-      );
-      
-      const snapshot = await getDocs(q);
+      // Get all servers first (since we can't do complex queries on free tier)
+      const snapshot = await getDocs(collection(db, "servers"));
       const servers = snapshot.docs
         .map(doc => ({ id: doc.id, ...doc.data() }))
         .filter(server => 
+          server.isPublic === true &&
           server.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !server.members.includes(currentUser.uid)
+          !server.members?.includes(currentUser.uid)
         );
       
       setSearchResults(servers);
