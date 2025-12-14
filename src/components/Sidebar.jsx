@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { collection, query, where, onSnapshot, addDoc, orderBy, serverTimestamp, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
+import ServerSearch from "./ServerSearch";
+import JoinRequests from "./JoinRequests";
 import "./Sidebar.css";
 
 function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelectedChannel }) {
@@ -10,6 +12,8 @@ function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelect
   const [channels, setChannels] = useState([]);
   const [showNewServerModal, setShowNewServerModal] = useState(false);
   const [showNewChannelModal, setShowNewChannelModal] = useState(false);
+  const [showServerSearch, setShowServerSearch] = useState(false);
+  const [showJoinRequests, setShowJoinRequests] = useState(false);
   const [newServerName, setNewServerName] = useState("");
   const [newChannelName, setNewChannelName] = useState("");
 
@@ -88,6 +92,7 @@ function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelect
         ownerId: currentUser.uid,
         members: [currentUser.uid],
         mutedMembers: [],
+        isPublic: true, // New servers are public by default
         createdAt: serverTimestamp()
       });
 
@@ -230,12 +235,30 @@ function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelect
         >
           +
         </div>
+        <div 
+          className="server-icon search-server" 
+          onClick={() => setShowServerSearch(true)}
+          title="Search Public Servers"
+        >
+          🔍
+        </div>
       </div>
       
       <div className="channels-panel">
         <div className="server-header">
           <h3>{selectedServer?.name || "No Server Selected"}</h3>
-          <span className="dropdown-arrow">⌄</span>
+          <div className="server-header-controls">
+            {selectedServer?.ownerId === currentUser.uid && (
+              <span 
+                className="join-requests-btn" 
+                onClick={() => setShowJoinRequests(true)}
+                title="Manage Join Requests"
+              >
+                📋
+              </span>
+            )}
+            <span className="dropdown-arrow">⌄</span>
+          </div>
         </div>
         
         <div className="channels-section">
@@ -345,6 +368,19 @@ function Sidebar({ selectedServer, setSelectedServer, selectedChannel, setSelect
             </form>
           </div>
         </div>
+      )}
+
+      {/* Server Search Modal */}
+      {showServerSearch && (
+        <ServerSearch onClose={() => setShowServerSearch(false)} />
+      )}
+
+      {/* Join Requests Modal */}
+      {showJoinRequests && (
+        <JoinRequests 
+          selectedServer={selectedServer}
+          onClose={() => setShowJoinRequests(false)} 
+        />
       )}
     </div>
   );
